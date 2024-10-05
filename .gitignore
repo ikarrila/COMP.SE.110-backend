@@ -1,33 +1,46 @@
-HELP.md
-target/
+# Maven target directory
+/target/
+
+# Maven Wrapper files
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!.mvn/wrapper/maven-wrapper.properties
+mvnw
+mvnw.cmd
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA files
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# NetBeans files
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# VS Code files
 .vscode/
+
+# STS (Spring Tool Suite)
+/.apt_generated
+/.classpath
+/.factorypath
+/.project
+/.settings/
+/.springBeans
+.sts4-cache
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build directory (optional)
+/build/
+
+# Environment variables and sensitive files
+.env
