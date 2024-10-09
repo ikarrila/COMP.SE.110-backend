@@ -1,0 +1,10 @@
+version: "3.9"
+name: "comp-se-110"
+services:
+  comp-se-110-backend:
+    container_name: comp-se-110-backend
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
