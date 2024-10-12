@@ -10,6 +10,9 @@ public class PriceDataService {
 
   private final String apiUrl = "https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/khi/statfin_khi_pxt_11xb.px";
 
+
+  //Function to be separated into fetchPriceData and printPriceData in order to aling
+  //with the design patterns (no fetchAndPrint structure allowed)
   public void fetchAndPrintPriceData() {
     RestTemplate restTemplate = new RestTemplate();
 

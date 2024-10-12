@@ -1,5 +1,6 @@
 package com.RecipeFinder.backend.controllers;
 
+import com.RecipeFinder.backend.services.RecipeService;
 import com.RecipeFinder.backend.models.Recipe;
 import com.RecipeFinder.backend.repositories.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,11 @@ import java.util.List;
 public class RecipeController {
 
     @Autowired
-    private RecipeRepository recipeRepository;
+    private RecipeService recipeService;
 
-    @PostMapping
-    public String saveRecipe(@RequestBody Recipe recipe) throws IOException {
-        recipeRepository.saveRecipe(recipe);
-        return "Recipe saved!";
-    }
 
     @GetMapping
-    public List<Recipe> getAllRecipes() throws IOException {
-        return recipeRepository.loadAllRecipes();
+    public void fetchRecipes() {
+        recipeService.fetchRecipes();
     }
 }
