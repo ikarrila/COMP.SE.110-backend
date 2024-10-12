@@ -2,8 +2,14 @@ package com.RecipeFinder.backend.repositories;
 
 import com.RecipeFinder.backend.models.PriceData;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
-public interface PriceDataRepository {
-    // Placeholder method
-    List<PriceData> getPriceData(); // Returns empty list or placeholder in the future
+@Repository
+public class PriceDataRepository {
+
+    // Placeholder method implementation
+    public List<PriceData> getPriceData() {
+        // For now, return an empty list or any mock data
+        return List.of();
+    }
 }
