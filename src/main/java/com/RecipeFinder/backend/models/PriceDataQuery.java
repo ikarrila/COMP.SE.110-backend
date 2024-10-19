@@ -7,8 +7,6 @@ public class PriceDataQuery {
     private List<QueryItem> query;
     private ResponseFormat response;
 
-    // Getters and Setters
-
     public List<QueryItem> getQuery() {
         return query;
     }
@@ -28,8 +26,6 @@ public class PriceDataQuery {
     public static class QueryItem {
         private String code;
         private Selection selection;
-
-        // Getters and Setters
 
         public String getCode() {
             return code;
@@ -52,8 +48,6 @@ public class PriceDataQuery {
         private String filter;
         private List<String> values;
 
-        // Getters and Setters
-
         public String getFilter() {
             return filter;
         }
@@ -73,8 +67,6 @@ public class PriceDataQuery {
 
     public static class ResponseFormat {
         private String format;
-
-        // Getters and Setters
 
         public String getFormat() {
             return format;

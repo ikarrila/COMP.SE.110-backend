@@ -13,6 +13,19 @@ public class User {
     private List<String> allergies;
     private List<Recipe> savedRecipes;
 
+    // Constructors
+    public User(Integer id, String name, LocalDate birthday, String diet, String favouriteCuisine, List<String> allergies, List<Recipe> savedRecipes) {
+        this.id = id;
+        this.name = name;
+        this.birthday = birthday;
+        this.diet = diet;
+        this.favouriteCuisine = favouriteCuisine;
+        this.allergies = allergies;
+        this.savedRecipes = savedRecipes;
+    }
+
+    public User() {}
+
     // Getters
 
     public Integer getId() {

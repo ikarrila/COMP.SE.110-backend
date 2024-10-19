@@ -1,18 +1,17 @@
 package com.RecipeFinder.backend.repositories;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Repository;
 
-import com.RecipeFinder.backend.models.Recipe;
 import com.RecipeFinder.backend.models.User;
 
 @Repository
@@ -30,67 +29,57 @@ public class UserRepository {
     // Load all users from the file
     public List<User> loadAllUsers() throws IOException {
         List<User> users = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            users.add(convertCsvToUser(line));
+
+        // Use class loader to access the CSV file in the resources
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                getClass().getClassLoader().getResourceAsStream(FILE_NAME)))) {
+
+            List<String> lines = reader.lines().collect(Collectors.toList()); // Read all lines
+
+            System.out.println("CSV Lines Read:");
+            lines.forEach(System.out::println);  // Debug log all lines
+
+            users = lines.stream()
+                .skip(1) // Skip header row if present
+                .map(line -> {
+                    String[] fields = line.split(";");
+                    System.out.println("Parsing user from line: " + line); // Log the parsed line
+                    return new User(
+                        Integer.parseInt(fields[0]),  // ID
+                        fields[1],                    // Name
+                        LocalDate.parse(fields[2]),   // Birthday
+                        fields[3],                    // Diet
+                        fields[4],                    // Favourite cuisine
+                        fields.length > 5 && !fields[5].isEmpty() ? List.of(fields[5].split(",")) : Collections.emptyList(), // Allergies
+                        Collections.emptyList()       // Placeholder for savedRecipes
+                    );
+                })
+                .collect(Collectors.toList());
         }
-        reader.close();
+
         return users;
+    }
+
+    // Get a user by ID
+    public Optional<User> getUserById(int id) throws IOException {
+        // Load all users and filter by the provided ID
+        return loadAllUsers().stream()
+                .filter(user -> user.getId() == id)
+                .findFirst();
     }
 
     // Convert User to CSV format
     private String convertUserToCsv(User user) {
         StringBuilder csvBuilder = new StringBuilder();
-        // Convert basic fields
         csvBuilder.append(user.getId()).append(";");
         csvBuilder.append(user.getName()).append(";");
         csvBuilder.append(user.getBirthday() != null ? user.getBirthday().toString() : "").append(";");
         csvBuilder.append(user.getDiet()).append(";");
         csvBuilder.append(user.getFavouriteCuisine()).append(";");
-        // Convert allergies (list of strings) to CSV
         csvBuilder.append(String.join(",", user.getAllergies())).append(";");
-        // Convert saved recipes (assuming we want only recipe IDs in CSV)
         csvBuilder.append(user.getSavedRecipes() != null ? user.getSavedRecipes().stream()
-                .map(recipe -> recipe.getId().toString()) // assuming Recipe has getId() method
+                .map(recipe -> recipe.getId().toString())
                 .collect(Collectors.joining(",")) : "");
         return csvBuilder.toString();
     }
-
-    // Convert a CSV line to a User object
-    private User convertCsvToUser(String csvLine) {
-        String[] fields = csvLine.split(";", -1); // Split CSV line by ;
-
-        User user = new User();
-        user.setId(Integer.parseInt(fields[0])); // Parse ID as Integer
-        user.setName(fields[1]); // Set name
-
-        // Parse birthday (handle empty string case)
-        if (!fields[2].isEmpty()) {
-            user.setBirthday(LocalDate.parse(fields[2])); // Assuming the birthday is stored in ISO format (yyyy-MM-dd)
-        }
-
-        user.setDiet(fields[3]); // Set diet
-        user.setFavouriteCuisine(fields[4]); // Set favorite cuisine
-
-        // Parse allergies (split by ",")
-        if (!fields[5].isEmpty()) {
-            user.setAllergies(List.of(fields[5].split("\\,")));
-        }
-
-        // Parse saved recipes (IDs split by ",")
-        if (!fields[6].isEmpty()) {
-            List<Recipe> savedRecipes = Arrays.stream(fields[6].split("\\,"))
-                    .map(id -> {
-                        Recipe recipe = new Recipe();
-                        recipe.setId(Long.parseLong(id)); // Assuming Recipe has a setId method
-                        return recipe;
-                    })
-                    .collect(Collectors.toList());
-            user.setSavedRecipes(savedRecipes);
-        }
-
-        return user;
-    }
-
 }
