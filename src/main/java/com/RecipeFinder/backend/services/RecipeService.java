@@ -6,15 +6,12 @@ import org.springframework.web.client.RestTemplate;
 import com.RecipeFinder.backend.models.Recipe;
 import com.RecipeFinder.backend.repositories.RecipeRepository;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RecipeService {
@@ -23,53 +20,45 @@ public class RecipeService {
     
   private List<Integer> recipeIds = new ArrayList<>();
   
-  //TODO: new function
-  //applyFoodItemFilter
-  //ottaa food item listan, includeIngredients, tallentaan recipeIdt, käyttää syötteenä dummy listaa
+  public void applyIngredientFilter(List<String> ingredients) {
+    RestTemplate restTemplate = new RestTemplate();
+    //Creating comma separated string
+    String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
+    String url = apiUrl + "?apiKey=" + apiKey + "&query=pasta" + "&number=3" + "&includeIngredients=" + includeIngrdients;
 
-    public void fetchRecipes() {
-        RestTemplate restTemplate = new RestTemplate();
-        //Exceliin kaikki filtterit
-        String url = apiUrl + "?apiKey=" + apiKey + "&query=pasta" + "&number=2";
-        
-        try {
-            String response = restTemplate.getForObject(url, String.class);
-            System.out.println("API Response: " + response);
+    try {
+      String response = restTemplate.getForObject(url, String.class);
+      System.out.println("API Response: " + response);
 
-          //Parsing
-          ObjectMapper mapper = new ObjectMapper();
-          JsonNode root = mapper.readTree(response);
-          JsonNode results = root.path("results");
+      //Parsing
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode root = mapper.readTree(response);
+      JsonNode results = root.path("results");
 
-          recipeIds.clear();
+      recipeIds.clear();
 
-          for (JsonNode result : results) {
-            int id = result.path("id").asInt();
-            recipeIds.add(id);
-            System.out.println("Recipe ID: " + id);
-          }
-
-
-          } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //UUSI URL
-    private final String infoUrl = "https://api.spoonacular.com/recipes/{id}/information";
-    public void fetchRecipeInformation() {
-      RestTemplate restTemplate = new RestTemplate();
-      try {
-        for (Integer id : recipeIds) {
-          String url = infoUrl.replace("{id}", id.toString()) + "?apiKey=" + apiKey;
-          String response = restTemplate.getForObject(url, String.class);
-          System.out.println("Recipe Information for ID " + id + ": " + response);
-        }
-
-      } catch (Exception e) {
-        e.printStackTrace();
+      for (JsonNode result : results) {
+        int id = result.path("id").asInt();
+        recipeIds.add(id);
+        System.out.println("Recipe ID: " + id);
       }
 
+    } catch (Exception e) {
+            e.printStackTrace();
+        }
+  }
+
+  private final String infoUrl = "https://api.spoonacular.com/recipes/{id}/information";
+  public void getRecipeInformation(Integer id) {
+    RestTemplate restTemplate = new RestTemplate();
+    try {
+      String url = infoUrl.replace("{id}", id.toString()) + "?apiKey=" + apiKey;
+      String response = restTemplate.getForObject(url, String.class);
+      System.out.println("Recipe Information for ID " + id + ": " + response);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
   }
+
+}
