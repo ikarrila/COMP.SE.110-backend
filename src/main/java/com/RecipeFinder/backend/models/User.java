@@ -13,7 +13,7 @@ public class User {
     private List<String> allergies;
     private List<Recipe> savedRecipes;
 
-    // Get whole profile
+    // Getters
 
     public Long getId() {
         return id;
