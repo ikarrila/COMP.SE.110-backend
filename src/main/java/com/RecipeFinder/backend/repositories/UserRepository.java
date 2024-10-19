@@ -62,7 +62,7 @@ public class UserRepository {
         String[] fields = csvLine.split(";", -1); // Split CSV line by ;
 
         User user = new User();
-        user.setId(Long.parseLong(fields[0])); // Parse ID
+        user.setId(Integer.parseInt(fields[0])); // Parse ID as Integer
         user.setName(fields[1]); // Set name
 
         // Parse birthday (handle empty string case)

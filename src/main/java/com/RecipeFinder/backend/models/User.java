@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class User {
-    private Long id;
+    private Integer id;
     private String name;
     // private String image; // @TODO: Add support for image URL
     private LocalDate birthday;
@@ -15,7 +15,7 @@ public class User {
 
     // Getters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -45,7 +45,7 @@ public class User {
 
     // Setters
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
