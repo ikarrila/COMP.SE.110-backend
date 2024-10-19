@@ -21,4 +21,9 @@ public class RecipeController {
     public void fetchRecipes() {
         recipeService.fetchRecipes();
     }
+
+    @GetMapping("/information")
+    public void fetchRecipeInformation() {
+        recipeService.fetchRecipeInformation();
+    }
 }

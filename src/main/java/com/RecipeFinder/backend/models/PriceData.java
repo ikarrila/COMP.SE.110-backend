@@ -3,6 +3,7 @@ package com.RecipeFinder.backend.models;
 import java.util.List;
 
 public class PriceData {
+  
     private List<String> categories;
     private List<Series> series;
 
@@ -13,6 +14,7 @@ public class PriceData {
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
+
 
     public List<Series> getSeries() {
         return series;
