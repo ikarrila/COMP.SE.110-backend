@@ -5,7 +5,6 @@ public class Ingredient {
     private double quantity;
     private String unit;
     private double price;
-    
-    
+
     // TODO: Getters and setters
 }
