@@ -1,20 +1,45 @@
 package com.RecipeFinder.backend.models;
 
+import java.util.List;
+
 public class PriceData {
-    // Placeholder for future fields
+    private List<String> categories;
+    private List<Series> series;
 
-    // Placeholder constructor
-    public PriceData() {
-        // Constructor logic here
+    public List<String> getCategories() {
+        return categories;
     }
 
-    // Placeholder methods
-    public String getDummyData() {
-        return "Placeholder Data";
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 
-    @Override
-    public String toString() {
-        return "PriceData placeholder";
+    public List<Series> getSeries() {
+        return series;
+    }
+
+    public void setSeries(List<Series> series) {
+        this.series = series;
+    }
+
+    public static class Series {
+        private String name;
+        private List<Double> data;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<Double> getData() {
+            return data;
+        }
+
+        public void setData(List<Double> data) {
+            this.data = data;
+        }
     }
 }
