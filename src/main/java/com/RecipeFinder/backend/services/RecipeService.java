@@ -61,4 +61,15 @@ public class RecipeService {
 
   }
 
+  public String extractItemName(String item) {
+    String[] parts = item.split(" ", 2);
+    //For error handling
+    if (parts.length > 1) {
+      return parts[1].toLowerCase();
+    }
+    return "";
+  }
+
+
+
 }
