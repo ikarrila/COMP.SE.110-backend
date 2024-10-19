@@ -7,6 +7,11 @@ public class Recipe {
     private String name;
     private List<Ingredient> ingredients;
     private NutritionalInfo nutritionalInfo;
+    private boolean isDairyFree;
+    private boolean isGlutenFree;
+    private boolean isSustainable;
+    private int healthScore;
+
 
     // Default constructor
     public Recipe() {}
@@ -52,3 +57,6 @@ public class Recipe {
         this.nutritionalInfo = nutritionalInfo;
     }
 }
+
+
+//TODO: Add missing items from prototype, f.e. isCheap, isSustainable
