@@ -3,9 +3,9 @@ package com.RecipeFinder.backend.models;
 import java.util.List;
 
 public class PriceData {
-
-    private List<String> categories; // List of months
-    private List<Series> series; // List of series (commodities)
+  
+    private List<String> categories;
+    private List<Series> series;
 
     public List<String> getCategories() {
         return categories;
@@ -15,6 +15,7 @@ public class PriceData {
         this.categories = categories;
     }
 
+
     public List<Series> getSeries() {
         return series;
     }
@@ -23,10 +24,9 @@ public class PriceData {
         this.series = series;
     }
 
-    // Inner class representing a series (commodity and its data across months)
     public static class Series {
-        private String name; 
-        private List<Double> data; 
+        private String name;
+        private List<Double> data;
 
         public String getName() {
             return name;
