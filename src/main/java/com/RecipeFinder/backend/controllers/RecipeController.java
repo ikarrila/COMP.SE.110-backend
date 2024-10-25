@@ -20,14 +20,14 @@ public class RecipeController {
 
 
     @GetMapping("/search")
-    public void applyIngredientFilter(
+    public List<Recipe> applyIngredientFilter(
         @RequestParam(value = "ingredients", required = false) List<String> ingredients
     ) {
-        recipeService.applyIngredientFilter(ingredients);
+        return recipeService.applyIngredientFilter(ingredients);
     }
 
     @GetMapping("/{id}")
-    public void getRecipeInformation(@PathVariable("id") Integer id) {
-        recipeService.getRecipeInformation(id);
+    public String getRecipeInformation(@PathVariable("id") Integer id) {
+        return recipeService.getRecipeInformation(id);
     }
 }
