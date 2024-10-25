@@ -22,14 +22,18 @@ docker compose up
 
 ## Endpoints
 
-Endpoints to get and update the current user's information.
+Endpoints to retrieve and update the current user's information.
 
 ```
-GET /me
-PATCH /me
+GET /api/profile/{id}
+PATCH /api/profile/{id}
+```
+To retrieve all user profiles for admin tasks use
+```
+GET /api/profile
 ```
 
-Endpoints for current user's meal plan.
+Endpoints for current user's meal plan. (Not implemented yet)
 
 ```
 GET /mealplan - returns a single meal plan
