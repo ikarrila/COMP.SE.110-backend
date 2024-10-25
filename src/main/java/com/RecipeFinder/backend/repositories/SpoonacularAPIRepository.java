@@ -3,7 +3,6 @@ package com.RecipeFinder.backend.repositories;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import com.RecipeFinder.backend.models.Ingredient;
 import com.RecipeFinder.backend.models.Recipe;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
