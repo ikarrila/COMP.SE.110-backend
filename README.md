@@ -52,3 +52,9 @@ Note that we don't need all the parameters.
 ```
 
 We also need endpoints for some select options for different search parameters.
+
+## Structure
+
+Current backend structure (26.10.2024) visualized below. It is due to change, but illustrates each component with related functions and available endpoints for easier debugging  
+
+![Design Graph drawio](https://github.com/user-attachments/assets/ff4d8907-7009-47d8-a5bb-88ec59109258)
