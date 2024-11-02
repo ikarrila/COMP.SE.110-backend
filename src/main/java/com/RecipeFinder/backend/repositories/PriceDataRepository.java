@@ -19,7 +19,16 @@ public class PriceDataRepository {
     private final String apiUrl = "https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/khi/statfin_khi_pxt_11xb.px";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // Service to retrieve all food price data with predefined food item codes
+    /**
+     * Retrieves all food price data with a predefined set of food item codes.
+     *
+     * @return PriceData object containing all food price data.
+     *
+     * This method employs the Template Method pattern by following a fixed sequence:
+     * constructing a request, sending it, and parsing the response. It also applies
+     * the Builder Pattern in constructing JSON queries, making the query setup
+     * reusable and scalable.
+     */
     public PriceData getAllFoodPriceData() {
         String predefinedRequestJson = highLevelItems();
         System.out.println("Sending predefined query to API: " + predefinedRequestJson);
@@ -31,7 +40,19 @@ public class PriceDataRepository {
         return parseResponse(response);
     }
 
-    // Service to retrieve food price data with optional filtering by start and end months
+    /**
+     * Retrieves filtered food price data based on optional start and end months and a list of commodities.
+     *
+     * @param startMonth Optional start month for filtering data.
+     * @param endMonth Optional end month for filtering data.
+     * @param commodities List of commodity codes to filter the data by.
+     * @return PriceData object with filtered data.
+     *
+     * By building queries dynamically, this method uses the Builder Pattern
+     * to construct JSON requests flexibly based on provided parameters.
+     * This modular approach allows for scalable query configurations, making
+     * it straightforward to add more filtering criteria in the future.
+     */
     public PriceData getFilteredPriceData(String startMonth, String endMonth, List<String> commodities) {
         PriceDataQuery query = buildQueryWithOptionalMonths(startMonth, endMonth, commodities);
         String requestJson = convertQueryToJson(query);
@@ -43,7 +64,17 @@ public class PriceDataRepository {
         return parseResponse(response);
     }
 
-    // Builds the query with optional start and end months
+    /**
+     * Builds a query for filtering by optional months and commodities.
+     *
+     * @param startMonth Optional start month.
+     * @param endMonth Optional end month.
+     * @param commodities List of commodity codes to include.
+     * @return PriceDataQuery object.
+     *
+     * This method applies the Builder Pattern for dynamic query generation,
+     * allowing the client to specify flexible parameters for more targeted queries.
+     */
     private PriceDataQuery buildQueryWithOptionalMonths(String startMonth, String endMonth, List<String> commodities) {
         List<String> months = new ArrayList<>();
 
@@ -61,7 +92,16 @@ public class PriceDataRepository {
         return createPriceDataQuery(Arrays.asList(monthItem, commodityItem, infoItem), "json-stat2");
     }
 
-    // Converts the query object to a JSON string
+    /**
+     * Converts a PriceDataQuery object to JSON for API request.
+     *
+     * @param query PriceDataQuery object.
+     * @return JSON string representation of the query.
+     *
+     * This method encapsulates the object-to-JSON conversion process,
+     * following the Adapter Pattern to enable seamless interaction
+     * between the Java object model and JSON-based API.
+     */
     private String convertQueryToJson(PriceDataQuery query) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -72,7 +112,17 @@ public class PriceDataRepository {
         }
     }
 
-    // Parses the API response into a list of PriceData objects
+    /**
+     * Parses the API response into a PriceData object.
+     *
+     * @param response JSON response from API.
+     * @return PriceData object.
+     *
+     * The parsing logic demonstrates the Factory Pattern, constructing
+     * and populating `PriceData` and `PriceData.Series` objects based on
+     * JSON input. This separation of parsing logic facilitates testability
+     * and reusability across different API responses.
+     */
     private PriceData parseResponse(String response) {
         PriceData priceData = new PriceData();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -168,7 +218,7 @@ public class PriceDataRepository {
         return monthRange;
     }
 
-    // These items are to be shown on the dashboard
+    // Items to be shown on the dashboard by default
     private String highLevelItems() {
         return """
         {
