@@ -13,14 +13,34 @@ public class RecipeRepository {
 
     private static final String FILE_NAME = "recipes.csv";
 
-    // Save a new recipe to the file
+    /**
+     * Persists a Recipe object to a CSV file.
+     *
+     * @param recipe Recipe object to save.
+     * @throws IOException if writing to the file fails.
+     *
+     * This method supports simple persistence of recipes without a database,
+     * useful in small-scale applications or local setups. It follows the
+     * Data Access Object (DAO) pattern, encapsulating low-level file
+     * I/O and providing a consistent API for managing recipes.
+     */
     public void saveRecipe(Recipe recipe) throws IOException {
         FileWriter writer = new FileWriter(FILE_NAME, true);
         writer.write(convertRecipeToCsv(recipe) + "\n");
         writer.close();
     }
 
-    // Find a recipe by ID
+    /**
+     * Retrieves a Recipe by its unique ID from the CSV file.
+     *
+     * @param id Unique identifier for the recipe.
+     * @return Optional Recipe object, or empty if not found.
+     * @throws IOException if reading from the file fails.
+     *
+     * This method provides an efficient way to find specific recipes while
+     * avoiding loading all data into memory. It employs the Repository pattern,
+     * abstracting away file access and enabling straightforward CRUD operations.
+     */
     public Optional<Recipe> findById(Long id) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
         String line;
@@ -35,7 +55,16 @@ public class RecipeRepository {
         return Optional.empty();
     }
 
-    // Load all recipes from the file
+    /**
+     * Loads all recipes from the CSV file.
+     *
+     * @return List of all Recipe objects.
+     * @throws IOException if reading from the file fails.
+     *
+     * This method reads each recipe entry from the file, converting it to
+     * `Recipe` objects and aggregating them in a list, which supports bulk
+     * data retrieval.
+     */
     public List<Recipe> loadAllRecipes() throws IOException {
         List<Recipe> recipes = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
@@ -47,12 +76,12 @@ public class RecipeRepository {
         return recipes;
     }
 
-    // Convert a recipe to CSV format
+    // Helper method to convert a Recipe object to CSV format
     private String convertRecipeToCsv(Recipe recipe) {
         return recipe.getId() + "," + recipe.getName(); // Add more fields as needed
     }
 
-    // Convert a CSV line to a Recipe object
+    // Helper method to convert a CSV line to a Recipe object
     private Recipe convertCsvToRecipe(String csvLine) {
         String[] fields = csvLine.split(",");
         Recipe recipe = new Recipe();

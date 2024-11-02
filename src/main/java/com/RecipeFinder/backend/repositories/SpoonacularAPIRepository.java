@@ -18,9 +18,22 @@ public class SpoonacularAPIRepository {
     private final String apiUrl = "https://api.spoonacular.com/recipes/complexSearch";
     private final String apiKey = "4b2cdc4ff73546b89cc40882c81c8e9c";
       
+    /**
+     * Searches for recipes that include specified ingredients.
+     *
+     * @param ingredients List of ingredients to include in search results.
+     * @return List of Recipe objects matching the criteria.
+     *
+     * Constructs an API request with specified ingredients to retrieve recipes.
+     * The method leverages Builder Pattern concepts, dynamically constructing
+     * URL parameters based on input. The Facade pattern is evident in its
+     * interface, allowing the service layer to fetch recipes without
+     * concern for the underlying API specifics.
+     */
     public List<Recipe> applyIngredientFilter(List<String> ingredients) {
     RestTemplate restTemplate = new RestTemplate();
-        //Creating comma separated string
+    
+    // Creating comma separated string
     String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
     String url = apiUrl + "?apiKey=" + apiKey + "&query=pasta" + "&number=3" + "&includeIngredients=" + includeIngrdients;
     
@@ -28,7 +41,7 @@ public class SpoonacularAPIRepository {
         String response = restTemplate.getForObject(url, String.class);
         System.out.println("API Response: " + response);
 
-        //Parsing
+        //Parse the API response to extract recipe details
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response);
         JsonNode results = root.path("results");
@@ -52,6 +65,16 @@ public class SpoonacularAPIRepository {
     }
     
     private final String infoUrl = "https://api.spoonacular.com/recipes/{id}/information";
+    
+    /**
+     * Retrieves detailed information about a specific recipe by ID.
+     *
+     * @param id Unique identifier for the recipe.
+     * @return JSON response string with recipe information.
+     *
+     * Constructs a URL for fetching detailed recipe information and parses the
+     * result. This method encapsulates the complexity of API interaction.
+     */
     public String getRecipeInformation(Integer id) {
         RestTemplate restTemplate = new RestTemplate();
         try {
@@ -66,6 +89,15 @@ public class SpoonacularAPIRepository {
     return null;
     }
 
+    /**
+     * Extracts the item name from a given string after the first space.
+     *
+     * @param item Input string with an item number and name.
+     * @return Extracted item name in lowercase.
+     *
+     * This helper method enhances the robustness of text parsing by handling
+     * input format variation, aiming to improve error resilience.
+     */
     public String extractItemName(String item) {
     String[] parts = item.split(" ", 2);
     //For error handling
