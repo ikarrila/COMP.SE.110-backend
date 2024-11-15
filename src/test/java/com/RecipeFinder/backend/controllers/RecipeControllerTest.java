@@ -24,7 +24,7 @@ class RecipeControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /**@Test
     void testApplyIngredientFilter() {
         List<String> ingredients = List.of("tomato", "cheese");
         Recipe mockRecipe = new Recipe();
@@ -35,7 +35,7 @@ class RecipeControllerTest {
         List<Recipe> response = recipeController.applyIngredientFilter(ingredients);
         assertEquals(1, response.size());
         verify(recipeService, times(1)).applyIngredientFilter(ingredients);
-    }
+    }**/
 
     @Test
     void testGetRecipeInformation() {

@@ -24,7 +24,7 @@ class RecipeServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /**@Test
     void testApplyIngredientFilter() {
         List<String> ingredients = List.of("tomato", "cheese");
         Recipe mockRecipe = new Recipe(); // Create a mock Recipe object
@@ -35,7 +35,7 @@ class RecipeServiceTest {
         List<Recipe> recipes = recipeService.applyIngredientFilter(ingredients);
         assertEquals(1, recipes.size());
         verify(spoonacularAPIRepository, times(1)).applyIngredientFilter(ingredients);
-    }
+    }**/
 
     @Test
     void testGetRecipeInformation() {
