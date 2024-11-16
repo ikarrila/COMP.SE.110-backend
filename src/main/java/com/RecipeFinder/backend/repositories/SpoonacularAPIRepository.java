@@ -31,7 +31,7 @@ public class SpoonacularAPIRepository {
      * interface, allowing the service layer to fetch recipes without
      * concern for the underlying API specifics.
      */  
-    public List<Recipe> applyIngredientFilter(List<String> ingredients, User user) {
+    public List<Recipe> applyIngredientFilter(List<String> ingredients, User user, RecipeFilter recipeFilter) {
     RestTemplate restTemplate = new RestTemplate();
 
     //Creating comma separated string
@@ -41,12 +41,13 @@ public class SpoonacularAPIRepository {
     System.out.println(url);
 
     String userFilteredUrl = applyUserFilters(url, user);
-    //String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
+    String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
     
     System.out.println(userFilteredUrl);
+    System.out.println(mealplanFilteredUrl);
 
     try {
-        String response = restTemplate.getForObject(userFilteredUrl, String.class);
+        String response = restTemplate.getForObject(mealplanFilteredUrl, String.class);
         System.out.println("API Response: " + response);
 
         //Parse the API response to extract recipe details
@@ -121,7 +122,6 @@ public class SpoonacularAPIRepository {
             url += "&diet=" + user.getDiet();
         }
 
-    
         if (user.getFavouriteCuisine() != null && !user.getFavouriteCuisine().isEmpty()) {
             url += "&cuisine=" + user.getFavouriteCuisine();
         }
@@ -135,6 +135,7 @@ public class SpoonacularAPIRepository {
     }
 
     //Applies the parameters in the API based on the frontend selections
+    //TODO: testaa että toimii
     public String applyMealplanFilters(String url, RecipeFilter recipeFilter) {
         if (recipeFilter.getCuisine() != null && !recipeFilter.getCuisine().isEmpty()) {
             if (url.contains("&cuisine=")) {
@@ -150,19 +151,35 @@ public class SpoonacularAPIRepository {
         if (recipeFilter.isGlutenFree()) {
             url += "&intolerances=dairy";
         }
-
-        if (recipeFilter.getCalories() > 0) {
-            url += "&minCalories=" + recipeFilter.getCalories();
+   
+        if (recipeFilter.isCaloriesUsed()) {
+            url += "&minCalories=" + recipeFilter.getMinCalories();
+            url += "&maxCalories=" + recipeFilter.getMaxCalories();
         }
 
-        if (recipeFilter.getProtein() > 0) {
-            url += "&minProtein=" + recipeFilter.getProtein();
+        if (recipeFilter.isProteinUsed()) {
+            url += "&minProtein=" + recipeFilter.getMinProtein();
+            url += "&maxProtein=" + recipeFilter.getMaxProtein();
         }
 
-        if (recipeFilter.getCarbs() > 0) {
-            url += "&minCarbs=" + recipeFilter.getCarbs();
+        if (recipeFilter.isCarbsUsed()) {
+            url += "&minCarbs=" + recipeFilter.getMinCarbs();
+            url += "&maxCarbs=" + recipeFilter.getMaxCarbs();
         } 
         return url;
+    }
+ 
+    public RecipeFilter createTestRecipeFilter() {
+        RecipeFilter recipeFilter = new RecipeFilter();
+        recipeFilter.setCuisine("italian");
+        recipeFilter.setDairyFree(false);
+        recipeFilter.setGlutenFree(false);
+        recipeFilter.setCaloriesUsed(false);
+        recipeFilter.setProteinUsed(false);
+        recipeFilter.setCarbsUsed(false);
+
+        return recipeFilter;
+        
     }
         
 }

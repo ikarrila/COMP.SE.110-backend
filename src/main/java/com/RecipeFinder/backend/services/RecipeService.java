@@ -18,6 +18,10 @@ public class RecipeService {
     @Autowired
     private UserService userService;
 
+    public RecipeFilter createRecipeFilter() {
+        return SpoonacularAPIRepository.createTestRecipeFilter();
+    }
+
     /**
      * Filters recipes based on specified ingredients.
      *
@@ -32,7 +36,10 @@ public class RecipeService {
     public List<Recipe> applyIngredientFilter(List<String> ingredients) {
         User defaultUser = userService.getUserById(1)
                                       .orElseThrow(() -> new RuntimeException("User not found!"));
-        return SpoonacularAPIRepository.applyIngredientFilter(ingredients, defaultUser);
+        
+        //Give a test parameter recipeFilter for the repository 
+        RecipeFilter testRecipeFilter = createRecipeFilter();
+        return SpoonacularAPIRepository.applyIngredientFilter(ingredients, defaultUser, testRecipeFilter);
     }
 
     /**
@@ -48,6 +55,7 @@ public class RecipeService {
     public String getRecipeInformation(Integer id) {
         return SpoonacularAPIRepository.getRecipeInformation(id);
     }
+
 }
 
 
