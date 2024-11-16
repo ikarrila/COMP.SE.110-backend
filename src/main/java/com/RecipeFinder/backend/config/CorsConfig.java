@@ -13,12 +13,11 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5173"); // Add your React app's URL
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/api/**", config);
-        source.registerCorsConfiguration("/recipes/**", config);
+        config.setAllowCredentials(true); // Allow credentials
+        config.addAllowedOriginPattern("http://localhost:*"); // Allow any port on localhost
+        config.addAllowedHeader("*"); // Allow all headers
+        config.addAllowedMethod("*"); // Allow all HTTP methods
+        source.registerCorsConfiguration("/**", config); // Apply to all endpoints
         return new CorsFilter(source);
     }
 }
