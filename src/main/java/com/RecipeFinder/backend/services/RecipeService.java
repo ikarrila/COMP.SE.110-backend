@@ -4,13 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.RecipeFinder.backend.models.Recipe;
+import com.RecipeFinder.backend.models.RecipeFilter;
+import com.RecipeFinder.backend.models.User;
 import com.RecipeFinder.backend.repositories.SpoonacularAPIRepository;
 import java.util.List;
 
 @Service
 public class RecipeService {
+
     @Autowired
     private SpoonacularAPIRepository SpoonacularAPIRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public RecipeFilter createRecipeFilter() {
+        return SpoonacularAPIRepository.createTestRecipeFilter();
+    }
 
     /**
      * Filters recipes based on specified ingredients.
@@ -24,7 +34,12 @@ public class RecipeService {
      * logic for filtering recipes and abstracts lower-level API interactions.
      */
     public List<Recipe> applyIngredientFilter(List<String> ingredients) {
-        return SpoonacularAPIRepository.applyIngredientFilter(ingredients);
+        User defaultUser = userService.getUserById(1)
+                                      .orElseThrow(() -> new RuntimeException("User not found!"));
+        
+        //Give a test parameter recipeFilter for the repository 
+        RecipeFilter testRecipeFilter = createRecipeFilter();
+        return SpoonacularAPIRepository.applyIngredientFilter(ingredients, defaultUser, testRecipeFilter);
     }
 
     /**
@@ -40,6 +55,7 @@ public class RecipeService {
     public String getRecipeInformation(Integer id) {
         return SpoonacularAPIRepository.getRecipeInformation(id);
     }
+
 }
 
 

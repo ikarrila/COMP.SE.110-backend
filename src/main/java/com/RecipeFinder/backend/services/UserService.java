@@ -27,6 +27,7 @@ public class UserService {
 
     public Optional<User> getUserById(int id) {
         try {
+            id = 1;
             return userRepository.getUserById(id);
         } catch (IOException e) {
             e.printStackTrace();

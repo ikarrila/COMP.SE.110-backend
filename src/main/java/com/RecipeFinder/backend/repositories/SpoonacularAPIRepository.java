@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import com.RecipeFinder.backend.models.Recipe;
+import com.RecipeFinder.backend.models.User;
+import com.RecipeFinder.backend.models.RecipeFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,7 +19,6 @@ public class SpoonacularAPIRepository {
 
     private final String apiUrl = "https://api.spoonacular.com/recipes/complexSearch";
     private final String apiKey = "4b2cdc4ff73546b89cc40882c81c8e9c";
-      
     /**
      * Searches for recipes that include specified ingredients.
      *
@@ -29,16 +30,24 @@ public class SpoonacularAPIRepository {
      * URL parameters based on input. The Facade pattern is evident in its
      * interface, allowing the service layer to fetch recipes without
      * concern for the underlying API specifics.
-     */
-    public List<Recipe> applyIngredientFilter(List<String> ingredients) {
+     */  
+    public List<Recipe> applyIngredientFilter(List<String> ingredients, User user, RecipeFilter recipeFilter) {
     RestTemplate restTemplate = new RestTemplate();
-    
-    // Creating comma separated string
+
+    //Creating comma separated string
     String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
-    String url = apiUrl + "?apiKey=" + apiKey + "&query=pasta" + "&number=3" + "&includeIngredients=" + includeIngrdients;
+    String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngrdients;
     
+    System.out.println(url);
+
+    String userFilteredUrl = applyUserFilters(url, user);
+    String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
+    
+    System.out.println(userFilteredUrl);
+    System.out.println(mealplanFilteredUrl);
+
     try {
-        String response = restTemplate.getForObject(url, String.class);
+        String response = restTemplate.getForObject(mealplanFilteredUrl, String.class);
         System.out.println("API Response: " + response);
 
         //Parse the API response to extract recipe details
@@ -48,6 +57,7 @@ public class SpoonacularAPIRepository {
 
         List<Recipe> recipes = new ArrayList<>();    
 
+    
         for (JsonNode result : results) {
             Recipe recipe = new Recipe();
             recipe.setId(result.path("id").asLong());
@@ -65,7 +75,7 @@ public class SpoonacularAPIRepository {
     }
     
     private final String infoUrl = "https://api.spoonacular.com/recipes/{id}/information";
-    
+
     /**
      * Retrieves detailed information about a specific recipe by ID.
      *
@@ -88,8 +98,7 @@ public class SpoonacularAPIRepository {
     }
     return null;
     }
-
-    /**
+   /**
      * Extracts the item name from a given string after the first space.
      *
      * @param item Input string with an item number and name.
@@ -106,5 +115,73 @@ public class SpoonacularAPIRepository {
     }
     return "";
     }
+
+    //Applies the parameters in the API based on the user filters
+    public String applyUserFilters(String url, User user) {
+        if (user.getDiet() != null && !user.getDiet().isEmpty()) {
+            url += "&diet=" + user.getDiet();
+        }
+
+        if (user.getFavouriteCuisine() != null && !user.getFavouriteCuisine().isEmpty()) {
+            url += "&cuisine=" + user.getFavouriteCuisine();
+        }
+
+        if (user.getAllergies() != null && !user.getAllergies().isEmpty()) {
+            String includeAllergies = user.getAllergies().stream().collect(Collectors.joining(","));
+            url += "&excludeIngredients=" + includeAllergies;
+        }
+
+        return url;
+    }
+
+    //Applies the parameters in the API based on the frontend selections
+    //TODO: testaa että toimii
+    public String applyMealplanFilters(String url, RecipeFilter recipeFilter) {
+        if (recipeFilter.getCuisine() != null && !recipeFilter.getCuisine().isEmpty()) {
+            if (url.contains("&cuisine=")) {
+                url = url.replace("&cuisine=", "&cuisine=" + recipeFilter.getCuisine() + ",");
+            } else {
+                url += "&cuisine=" + recipeFilter.getCuisine();
+            }
+        }
+        if (recipeFilter.isDairyFree()) {
+            url += "&intolerances=dairy";
+        }
+
+        if (recipeFilter.isGlutenFree()) {
+            url += "&intolerances=dairy";
+        }
+   
+        if (recipeFilter.isCaloriesUsed()) {
+            url += "&minCalories=" + recipeFilter.getMinCalories();
+            url += "&maxCalories=" + recipeFilter.getMaxCalories();
+        }
+
+        if (recipeFilter.isProteinUsed()) {
+            url += "&minProtein=" + recipeFilter.getMinProtein();
+            url += "&maxProtein=" + recipeFilter.getMaxProtein();
+        }
+
+        if (recipeFilter.isCarbsUsed()) {
+            url += "&minCarbs=" + recipeFilter.getMinCarbs();
+            url += "&maxCarbs=" + recipeFilter.getMaxCarbs();
+        } 
+        return url;
+    }
+ 
+    public RecipeFilter createTestRecipeFilter() {
+        RecipeFilter recipeFilter = new RecipeFilter();
+        recipeFilter.setCuisine("italian");
+        recipeFilter.setDairyFree(false);
+        recipeFilter.setGlutenFree(false);
+        recipeFilter.setCaloriesUsed(false);
+        recipeFilter.setProteinUsed(false);
+        recipeFilter.setCarbsUsed(false);
+
+        return recipeFilter;
+        
+    }
+        
 }
+
     
