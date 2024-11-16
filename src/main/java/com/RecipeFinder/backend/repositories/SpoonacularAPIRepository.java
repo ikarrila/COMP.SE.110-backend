@@ -41,7 +41,7 @@ public class SpoonacularAPIRepository {
     System.out.println(url);
 
     String userFilteredUrl = applyUserFilters(url, user);
-    //String finalUrl = applyAdditionalFilters(userFilteredUrl, recipeFilter);
+    //String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
     
     System.out.println(userFilteredUrl);
 
@@ -135,7 +135,7 @@ public class SpoonacularAPIRepository {
     }
 
     //Applies the parameters in the API based on the frontend selections
-    public String applyAdditionalFilters(String url, RecipeFilter recipeFilter) {
+    public String applyMealplanFilters(String url, RecipeFilter recipeFilter) {
         if (recipeFilter.getCuisine() != null && !recipeFilter.getCuisine().isEmpty()) {
             if (url.contains("&cuisine=")) {
                 url = url.replace("&cuisine=", "&cuisine=" + recipeFilter.getCuisine() + ",");
