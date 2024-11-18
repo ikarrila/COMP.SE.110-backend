@@ -30,24 +30,34 @@ public class SpoonacularAPIRepository {
      * URL parameters based on input. The Facade pattern is evident in its
      * interface, allowing the service layer to fetch recipes without
      * concern for the underlying API specifics.
-     */  
-    public List<Recipe> applyIngredientFilter(List<String> ingredients, User user, RecipeFilter recipeFilter) {
+     */ 
+    
+     public String urlBuilder(List<String> ingredients) {
+        String includeIngredients = ingredients.stream().collect(Collectors.joining(","));
+        String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngredients;
+        System.out.println(url);
+        return url;
+     } 
+    
+     
+
+    public List<Recipe> returnRecipes(String url) {
     RestTemplate restTemplate = new RestTemplate();
 
     //Creating comma separated string
-    String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
-    String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngrdients;
+    //String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
+    //String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngrdients;
     
-    System.out.println(url);
+    //System.out.println(url);
 
-    String userFilteredUrl = applyUserFilters(url, user);
-    String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
+    //String userFilteredUrl = applyUserFilters(url, user);
+    //String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
     
-    System.out.println(userFilteredUrl);
-    System.out.println(mealplanFilteredUrl);
+    //System.out.println(userFilteredUrl);
+    //System.out.println(mealplanFilteredUrl);
 
     try {
-        String response = restTemplate.getForObject(mealplanFilteredUrl, String.class);
+        String response = restTemplate.getForObject(url, String.class);
         System.out.println("API Response: " + response);
 
         //Parse the API response to extract recipe details
@@ -130,12 +140,11 @@ public class SpoonacularAPIRepository {
             String includeAllergies = user.getAllergies().stream().collect(Collectors.joining(","));
             url += "&excludeIngredients=" + includeAllergies;
         }
-
+        System.out.println(url);
         return url;
     }
 
     //Applies the parameters in the API based on the frontend selections
-    //TODO: testaa että toimii
     public String applyMealplanFilters(String url, RecipeFilter recipeFilter) {
         if (recipeFilter.getCuisine() != null && !recipeFilter.getCuisine().isEmpty()) {
             if (url.contains("&cuisine=")) {
@@ -166,9 +175,11 @@ public class SpoonacularAPIRepository {
             url += "&minCarbs=" + recipeFilter.getMinCarbs();
             url += "&maxCarbs=" + recipeFilter.getMaxCarbs();
         } 
+        System.out.println(url);
         return url;
     }
  
+    //Placeholder recipe filter in order to search recipes based on the mealplan filters
     public RecipeFilter createTestRecipeFilter() {
         RecipeFilter recipeFilter = new RecipeFilter();
         recipeFilter.setCuisine("italian");

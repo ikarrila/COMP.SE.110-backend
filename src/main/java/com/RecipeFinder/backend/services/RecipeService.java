@@ -22,6 +22,10 @@ public class RecipeService {
         return SpoonacularAPIRepository.createTestRecipeFilter();
     }
 
+    public String urlBuilder(List<String> ingredients) {
+        return SpoonacularAPIRepository.urlBuilder(ingredients);
+    }
+
     /**
      * Filters recipes based on specified ingredients.
      *
@@ -33,14 +37,33 @@ public class RecipeService {
      * the provided ingredients. This service design centralizes business
      * logic for filtering recipes and abstracts lower-level API interactions.
      */
-    public List<Recipe> applyIngredientFilter(List<String> ingredients) {
+    
+     public List<Recipe> getMealplanRecipes(List<String> ingredients) {
         User defaultUser = userService.getUserById(1)
                                       .orElseThrow(() -> new RuntimeException("User not found!"));
         
         //Give a test parameter recipeFilter for the repository 
         RecipeFilter testRecipeFilter = createRecipeFilter();
-        return SpoonacularAPIRepository.applyIngredientFilter(ingredients, defaultUser, testRecipeFilter);
+        String url = SpoonacularAPIRepository.urlBuilder(ingredients);
+        String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
+        String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
+        return SpoonacularAPIRepository.returnRecipes(mealplanFilteredUrl);
     }
+
+
+    public List<Recipe> getUserRecipes(List<String> ingredients) {
+        User defaultUser = userService.getUserById(1)
+                                      .orElseThrow(() -> new RuntimeException("User not found!"));
+        String url = SpoonacularAPIRepository.urlBuilder(ingredients);
+        String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
+        return SpoonacularAPIRepository.returnRecipes(userFilteredUrl);
+    }
+
+    public List<Recipe> getIngredientRecipes(List<String> ingredients) {
+        String url = SpoonacularAPIRepository.urlBuilder(ingredients);
+        return SpoonacularAPIRepository.returnRecipes(url);
+    }
+
 
     /**
      * Retrieves detailed information for a recipe by its unique ID.
