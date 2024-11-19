@@ -8,6 +8,7 @@ import com.RecipeFinder.backend.models.RecipeFilter;
 import com.RecipeFinder.backend.models.User;
 import com.RecipeFinder.backend.repositories.SpoonacularAPIRepository;
 import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public class RecipeService {
@@ -24,6 +25,10 @@ public class RecipeService {
 
     public String urlBuilder(List<String> ingredients) {
         return SpoonacularAPIRepository.urlBuilder(ingredients);
+    }
+
+    public JsonNode getActiveFilters(String url) {
+        return SpoonacularAPIRepository.getActiveFilters(url);
     }
 
     /**
