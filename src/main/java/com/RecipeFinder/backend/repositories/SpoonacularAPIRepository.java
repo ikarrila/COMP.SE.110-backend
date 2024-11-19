@@ -199,7 +199,7 @@ public class SpoonacularAPIRepository {
         
     }
 
-    public String getActiveFilters(String url) {
+    public JsonNode getActiveFilters(String url) {
         Map<String, String> filters = new HashMap<>();
         try {
             String query = new URL(url).getQuery();
@@ -223,15 +223,16 @@ public class SpoonacularAPIRepository {
     
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(filters);
+            // Convert the map to a JsonNode
+            return mapper.valueToTree(filters);
         } catch (Exception e) {
             e.printStackTrace();
         }
     
-        return "{}"; // Return empty JSON if an error occurs
-
+        // Return an empty JsonNode in case of an error
+        return new ObjectMapper().createObjectNode();
     }
-    
+
 }
 
     

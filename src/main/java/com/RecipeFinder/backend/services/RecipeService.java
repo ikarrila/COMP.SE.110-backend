@@ -47,8 +47,10 @@ public class RecipeService {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
-        String jsontest = SpoonacularAPIRepository.getActiveFilters(mealplanFilteredUrl);
-        System.out.println(jsontest);
+
+        //Tests returning the active filters
+        System.out.println(SpoonacularAPIRepository.getActiveFilters(mealplanFilteredUrl));
+
         return SpoonacularAPIRepository.returnRecipes(mealplanFilteredUrl);
     }
 
