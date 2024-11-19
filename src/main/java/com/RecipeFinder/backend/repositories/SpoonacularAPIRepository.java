@@ -9,10 +9,16 @@ import com.RecipeFinder.backend.models.RecipeFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.net.URL;
+import java.net.URLDecoder;
 
 @Repository
 public class SpoonacularAPIRepository {
@@ -192,7 +198,40 @@ public class SpoonacularAPIRepository {
         return recipeFilter;
         
     }
-        
+
+    public String getActiveFilters(String url) {
+        Map<String, String> filters = new HashMap<>();
+        try {
+            String query = new URL(url).getQuery();
+            if (query != null && !query.isEmpty()) {
+                String[] pairs = query.split("&");
+                for (String pair : pairs) {
+                    String[] keyValue = pair.split("=", 2);
+                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                    String value = keyValue.length > 1
+                            ? URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8)
+                            : "";
+    
+                    if (!key.equalsIgnoreCase("apiKey")) {
+                        filters.put(key, value);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(filters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        return "{}"; // Return empty JSON if an error occurs
+
+    }
+    
 }
 
     
