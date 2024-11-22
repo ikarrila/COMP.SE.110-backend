@@ -9,6 +9,10 @@ import com.RecipeFinder.backend.models.User;
 import com.RecipeFinder.backend.repositories.SpoonacularAPIRepository;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class RecipeService {
@@ -19,6 +23,12 @@ public class RecipeService {
     @Autowired
     private UserService userService;
 
+    private final ConcurrentHashMap<Integer, RecipeFilter> activeFilters = new ConcurrentHashMap<Integer, RecipeFilter>();
+
+    private final AtomicInteger sessionIdCounter = new AtomicInteger(0);
+    private int latestSessionId = -1;
+
+
     public RecipeFilter createRecipeFilter() {
         return SpoonacularAPIRepository.createTestRecipeFilter();
     }
@@ -27,9 +37,6 @@ public class RecipeService {
         return SpoonacularAPIRepository.urlBuilder(ingredients);
     }
 
-    public JsonNode getActiveFilters(String url) {
-        return SpoonacularAPIRepository.getActiveFilters(url);
-    }
 
     /**
      * Filters recipes based on specified ingredients.
@@ -53,8 +60,9 @@ public class RecipeService {
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
 
-        //Tests returning the active filters
-        System.out.println(SpoonacularAPIRepository.getActiveFilters(mealplanFilteredUrl));
+        updateActiveFilters(testRecipeFilter);
+        System.out.println(getActiveFilters());
+        
 
         return SpoonacularAPIRepository.returnRecipes(mealplanFilteredUrl);
     }
@@ -73,7 +81,23 @@ public class RecipeService {
         return SpoonacularAPIRepository.returnRecipes(url);
     }
 
+    public void updateActiveFilters(RecipeFilter recipeFilter) {
+        int newSessionId = sessionIdCounter.incrementAndGet();
+        activeFilters.put(newSessionId, recipeFilter);
+        latestSessionId = newSessionId;
+    }
 
+    public JsonNode getActiveFilters() {
+        RecipeFilter filter = activeFilters.getOrDefault(latestSessionId, new RecipeFilter());
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // Convert the RecipeFilter object to a JsonNode
+            return mapper.valueToTree(filter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return mapper.createObjectNode(); // Return an empty JSON object in case of an error
+        }
+    }
 
 
     /**
