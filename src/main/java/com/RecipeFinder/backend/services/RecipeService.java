@@ -59,7 +59,7 @@ public class RecipeService {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
-        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(testRecipeFilter, defaultUser);
+        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(testRecipeFilter, defaultUser, ingredients);
         updateActiveFilters(combined);
         System.out.println(getActiveFilters());
         
@@ -74,7 +74,7 @@ public class RecipeService {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         RecipeFilter emptyFilter = new RecipeFilter();
-        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(emptyFilter, defaultUser);
+        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(emptyFilter, defaultUser, ingredients);
         updateActiveFilters(combined);
 
         return SpoonacularAPIRepository.returnRecipes(userFilteredUrl);
@@ -82,6 +82,11 @@ public class RecipeService {
 
     public List<Recipe> getIngredientRecipes(List<String> ingredients) {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
+        RecipeFilter emptyFilter = new RecipeFilter();
+        User emptyUser = new User();
+        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(emptyFilter, emptyUser, ingredients);
+        updateActiveFilters(combined);
+
         return SpoonacularAPIRepository.returnRecipes(url);
     }
 

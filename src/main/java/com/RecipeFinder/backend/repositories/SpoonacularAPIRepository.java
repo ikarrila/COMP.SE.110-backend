@@ -189,6 +189,7 @@ public class SpoonacularAPIRepository {
     public RecipeFilter createTestRecipeFilter() {
         RecipeFilter recipeFilter = new RecipeFilter();
         recipeFilter.setCuisine("italian");
+        recipeFilter.setDiet("vegetarian");
         recipeFilter.setDairyFree(false);
         recipeFilter.setGlutenFree(false);
         recipeFilter.setCaloriesUsed(false);
@@ -199,10 +200,11 @@ public class SpoonacularAPIRepository {
        
     }
 
-    public RecipeFilter combineFilters(RecipeFilter recipeFilter, User user) {
+    public RecipeFilter combineFilters(RecipeFilter recipeFilter, User user, List<String> ingredients) {
         RecipeFilter combinedFilter = new RecipeFilter();
 
         combinedFilter.setCuisine(recipeFilter.getCuisine());
+        combinedFilter.setDiet(recipeFilter.getDiet());
         combinedFilter.setDairyFree(recipeFilter.isDairyFree());
         combinedFilter.setGlutenFree(recipeFilter.isGlutenFree());
         combinedFilter.setCaloriesUsed(recipeFilter.isCaloriesUsed());
@@ -214,11 +216,14 @@ public class SpoonacularAPIRepository {
         combinedFilter.setCarbsUsed(recipeFilter.isCarbsUsed());
         combinedFilter.setMinCarbs(recipeFilter.getMinCarbs());
         combinedFilter.setMaxCarbs(recipeFilter.getMaxCarbs());
+        combinedFilter.setExcludeIngredients(recipeFilter.getExcludeIngredients());
+        combinedFilter.setIncludeIngredients(recipeFilter.getIncludeIngredients());
+
 
         if (user.getDiet() != null && !user.getDiet().isEmpty()) {
-            combinedFilter.setCuisine(combinedFilter.getCuisine() == null
+            combinedFilter.setDiet(combinedFilter.getDiet() == null
                 ? user.getDiet()
-                : combinedFilter.getCuisine() + ", " + user.getDiet());
+                : combinedFilter.getDiet() + ", " + user.getDiet());
         }
     
         if (user.getFavouriteCuisine() != null && !user.getFavouriteCuisine().isEmpty()) {
@@ -233,14 +238,23 @@ public class SpoonacularAPIRepository {
         }
         if (user.getAllergies() != null) {
             combinedExcludedIngredients.addAll(user.getAllergies());
-        }
-    
-        // Remove duplicates from the merged list
-        combinedFilter.setExcludeIngredients(
+        } combinedFilter.setExcludeIngredients(
             combinedExcludedIngredients.stream()
                 .distinct()
                 .collect(Collectors.toList())
         );
+
+        List<String> combinedIncludedIngredients = new ArrayList<>();
+        if (recipeFilter.getIncludeIngredients() != null) {
+            combinedIncludedIngredients.addAll(recipeFilter.getIncludeIngredients());
+        }
+        if (ingredients != null) {
+            combinedIncludedIngredients.addAll(ingredients);
+        }
+        combinedFilter.setIncludeIngredients(
+            combinedIncludedIngredients.stream().distinct().collect(Collectors.toList())
+        );  
+
 
         return combinedFilter;
     
