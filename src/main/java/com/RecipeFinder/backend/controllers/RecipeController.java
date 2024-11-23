@@ -5,7 +5,7 @@ import com.RecipeFinder.backend.models.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
 @RestController
@@ -43,5 +43,12 @@ public class RecipeController {
     @GetMapping("/{id}")
     public String getRecipeInformation(@PathVariable("id") Integer id) {
         return recipeService.getRecipeInformation(id);
+    }
+
+    @GetMapping("/active-filters")
+    public JsonNode getActiveFilters() {
+        //TODO: recipeFitler mode to jsonode
+        
+        return recipeService.getActiveFilters();
     }
 }

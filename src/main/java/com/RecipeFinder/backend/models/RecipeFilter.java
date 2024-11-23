@@ -5,6 +5,7 @@ import java.util.List;
 //TODO: true false valuet onko sliderit käytössä?
 public class RecipeFilter {
     private String cuisine;
+    private String diet;
     private boolean isDairyFree;
     private boolean isGlutenFree;
 
@@ -29,6 +30,14 @@ public class RecipeFilter {
 
     public void setCuisine(String cuisine) {
         this.cuisine = cuisine;
+    }
+
+    public String getDiet() {
+        return diet;
+    }
+
+    public void setDiet(String diet) {
+        this.diet = diet;
     }
 
     public boolean isDairyFree() {

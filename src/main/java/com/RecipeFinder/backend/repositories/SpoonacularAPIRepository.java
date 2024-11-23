@@ -9,10 +9,16 @@ import com.RecipeFinder.backend.models.RecipeFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.net.URL;
+import java.net.URLDecoder;
 
 @Repository
 public class SpoonacularAPIRepository {
@@ -183,6 +189,7 @@ public class SpoonacularAPIRepository {
     public RecipeFilter createTestRecipeFilter() {
         RecipeFilter recipeFilter = new RecipeFilter();
         recipeFilter.setCuisine("italian");
+        recipeFilter.setDiet("vegetarian");
         recipeFilter.setDairyFree(false);
         recipeFilter.setGlutenFree(false);
         recipeFilter.setCaloriesUsed(false);
@@ -190,9 +197,69 @@ public class SpoonacularAPIRepository {
         recipeFilter.setCarbsUsed(false);
 
         return recipeFilter;
-        
+       
     }
-        
+
+    public RecipeFilter combineFilters(RecipeFilter recipeFilter, User user, List<String> ingredients) {
+        RecipeFilter combinedFilter = new RecipeFilter();
+
+        combinedFilter.setCuisine(recipeFilter.getCuisine());
+        combinedFilter.setDiet(recipeFilter.getDiet());
+        combinedFilter.setDairyFree(recipeFilter.isDairyFree());
+        combinedFilter.setGlutenFree(recipeFilter.isGlutenFree());
+        combinedFilter.setCaloriesUsed(recipeFilter.isCaloriesUsed());
+        combinedFilter.setMinCalories(recipeFilter.getMinCalories());
+        combinedFilter.setMaxCalories(recipeFilter.getMaxCalories());
+        combinedFilter.setProteinUsed(recipeFilter.isProteinUsed());
+        combinedFilter.setMinProtein(recipeFilter.getMinProtein());
+        combinedFilter.setMaxProtein(recipeFilter.getMaxProtein());
+        combinedFilter.setCarbsUsed(recipeFilter.isCarbsUsed());
+        combinedFilter.setMinCarbs(recipeFilter.getMinCarbs());
+        combinedFilter.setMaxCarbs(recipeFilter.getMaxCarbs());
+        combinedFilter.setExcludeIngredients(recipeFilter.getExcludeIngredients());
+        combinedFilter.setIncludeIngredients(recipeFilter.getIncludeIngredients());
+
+
+        if (user.getDiet() != null && !user.getDiet().isEmpty()) {
+            combinedFilter.setDiet(combinedFilter.getDiet() == null
+                ? user.getDiet()
+                : combinedFilter.getDiet() + ", " + user.getDiet());
+        }
+    
+        if (user.getFavouriteCuisine() != null && !user.getFavouriteCuisine().isEmpty()) {
+            combinedFilter.setCuisine(combinedFilter.getCuisine() == null
+                ? user.getFavouriteCuisine()
+                : combinedFilter.getCuisine() + ", " + user.getFavouriteCuisine());
+        }
+    
+        List<String> combinedExcludedIngredients = new ArrayList<>();
+        if (recipeFilter.getExcludeIngredients() != null) {
+            combinedExcludedIngredients.addAll(recipeFilter.getExcludeIngredients());
+        }
+        if (user.getAllergies() != null) {
+            combinedExcludedIngredients.addAll(user.getAllergies());
+        } combinedFilter.setExcludeIngredients(
+            combinedExcludedIngredients.stream()
+                .distinct()
+                .collect(Collectors.toList())
+        );
+
+        List<String> combinedIncludedIngredients = new ArrayList<>();
+        if (recipeFilter.getIncludeIngredients() != null) {
+            combinedIncludedIngredients.addAll(recipeFilter.getIncludeIngredients());
+        }
+        if (ingredients != null) {
+            combinedIncludedIngredients.addAll(ingredients);
+        }
+        combinedFilter.setIncludeIngredients(
+            combinedIncludedIngredients.stream().distinct().collect(Collectors.toList())
+        );  
+
+
+        return combinedFilter;
+    
+    }
+
 }
 
     
