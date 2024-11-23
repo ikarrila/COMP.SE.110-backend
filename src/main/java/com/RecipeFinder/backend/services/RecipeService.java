@@ -59,8 +59,8 @@ public class RecipeService {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
-
-        updateActiveFilters(testRecipeFilter);
+        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(testRecipeFilter, defaultUser);
+        updateActiveFilters(combined);
         System.out.println(getActiveFilters());
         
 
@@ -73,6 +73,10 @@ public class RecipeService {
                                       .orElseThrow(() -> new RuntimeException("User not found!"));
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
+        RecipeFilter emptyFilter = new RecipeFilter();
+        RecipeFilter combined = SpoonacularAPIRepository.combineFilters(emptyFilter, defaultUser);
+        updateActiveFilters(combined);
+
         return SpoonacularAPIRepository.returnRecipes(userFilteredUrl);
     }
 

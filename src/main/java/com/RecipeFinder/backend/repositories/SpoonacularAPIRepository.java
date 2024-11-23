@@ -196,41 +196,54 @@ public class SpoonacularAPIRepository {
         recipeFilter.setCarbsUsed(false);
 
         return recipeFilter;
-        
+       
     }
 
-    public JsonNode getActiveFilters(String url) {
-        Map<String, String> filters = new HashMap<>();
-        try {
-            String query = new URL(url).getQuery();
-            if (query != null && !query.isEmpty()) {
-                String[] pairs = query.split("&");
-                for (String pair : pairs) {
-                    String[] keyValue = pair.split("=", 2);
-                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
-                    String value = keyValue.length > 1
-                            ? URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8)
-                            : "";
-    
-                    if (!key.equalsIgnoreCase("apiKey")) {
-                        filters.put(key, value);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public RecipeFilter combineFilters(RecipeFilter recipeFilter, User user) {
+        RecipeFilter combinedFilter = new RecipeFilter();
+
+        combinedFilter.setCuisine(recipeFilter.getCuisine());
+        combinedFilter.setDairyFree(recipeFilter.isDairyFree());
+        combinedFilter.setGlutenFree(recipeFilter.isGlutenFree());
+        combinedFilter.setCaloriesUsed(recipeFilter.isCaloriesUsed());
+        combinedFilter.setMinCalories(recipeFilter.getMinCalories());
+        combinedFilter.setMaxCalories(recipeFilter.getMaxCalories());
+        combinedFilter.setProteinUsed(recipeFilter.isProteinUsed());
+        combinedFilter.setMinProtein(recipeFilter.getMinProtein());
+        combinedFilter.setMaxProtein(recipeFilter.getMaxProtein());
+        combinedFilter.setCarbsUsed(recipeFilter.isCarbsUsed());
+        combinedFilter.setMinCarbs(recipeFilter.getMinCarbs());
+        combinedFilter.setMaxCarbs(recipeFilter.getMaxCarbs());
+
+        if (user.getDiet() != null && !user.getDiet().isEmpty()) {
+            combinedFilter.setCuisine(combinedFilter.getCuisine() == null
+                ? user.getDiet()
+                : combinedFilter.getCuisine() + ", " + user.getDiet());
         }
     
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            // Convert the map to a JsonNode
-            return mapper.valueToTree(filters);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (user.getFavouriteCuisine() != null && !user.getFavouriteCuisine().isEmpty()) {
+            combinedFilter.setCuisine(combinedFilter.getCuisine() == null
+                ? user.getFavouriteCuisine()
+                : combinedFilter.getCuisine() + ", " + user.getFavouriteCuisine());
         }
     
-        // Return an empty JsonNode in case of an error
-        return new ObjectMapper().createObjectNode();
+        List<String> combinedExcludedIngredients = new ArrayList<>();
+        if (recipeFilter.getExcludeIngredients() != null) {
+            combinedExcludedIngredients.addAll(recipeFilter.getExcludeIngredients());
+        }
+        if (user.getAllergies() != null) {
+            combinedExcludedIngredients.addAll(user.getAllergies());
+        }
+    
+        // Remove duplicates from the merged list
+        combinedFilter.setExcludeIngredients(
+            combinedExcludedIngredients.stream()
+                .distinct()
+                .collect(Collectors.toList())
+        );
+
+        return combinedFilter;
+    
     }
 
 }
