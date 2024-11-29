@@ -29,30 +29,32 @@ class UserServiceTest {
 
     @Test
     void testGetAllUsers() throws IOException {
-        User user = new User(1, "John Doe", LocalDate.of(1990, 1, 1), "Vegetarian", "Italian", List.of("Nuts"), List.of());
+        User user = new User(1, "Jane Smith", LocalDate.of(1985, 8, 22), "Vegan", "Mexican", List.of("Dairy", "Soy"),
+                List.of());
         when(userRepository.loadAllUsers()).thenReturn(List.of(user));
 
         List<User> users = userService.getAllUsers();
         assertNotNull(users);
         assertEquals(1, users.size());
-        assertEquals("John Doe", users.get(0).getName());
+        assertEquals("Jane Smith", users.get(0).getName());
     }
 
     @Test
     void testGetUserById_UserExists() throws IOException {
-        User user = new User(1, "John Doe", LocalDate.of(1990, 1, 1), "Vegetarian", "Italian", List.of("Nuts"), List.of());
+        User user = new User(1, "Jane Smith", LocalDate.of(1985, 8, 22), "Vegan", "Mexican", List.of("Dairy", "Soy"),
+                List.of());
         when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
 
         Optional<User> result = userService.getUserById(1);
         assertTrue(result.isPresent());
-        assertEquals("John Doe", result.get().getName());
+        assertEquals("Jane Smith", result.get().getName());
     }
 
     @Test
     void testGetUserById_UserDoesNotExist() throws IOException {
-        when(userRepository.getUserById(1)).thenReturn(Optional.empty());
+        when(userRepository.getUserById(2)).thenReturn(Optional.empty());
 
-        Optional<User> result = userService.getUserById(1);
+        Optional<User> result = userService.getUserById(2);
         assertFalse(result.isPresent());
     }
 }
