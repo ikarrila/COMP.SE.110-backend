@@ -22,11 +22,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // Get all user profiles
     @GetMapping("/")
     public List<User> getUserProfiles() {
         return userService.getAllUsers(); // This will return a JSON response of users
     }
 
+    // Get user profile by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         Optional<User> user = userService.getUserById(id);
@@ -38,6 +40,7 @@ public class UserController {
         }
     }
 
+    // Update user profile by ID
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUser(@PathVariable int id, @RequestBody User user) {
         boolean updated = userService.updateUser(
