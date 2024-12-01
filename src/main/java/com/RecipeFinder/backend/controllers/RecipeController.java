@@ -46,7 +46,7 @@ public class RecipeController {
         return recipeService.getRecipeInformation(id);
     }
 
-    //Get all the active filters affecting the recipe search
+    //Get all the active filters affecting the recipe search without sending API call
     @GetMapping("/active-filters")
     public JsonNode getActiveFilters() {     
         return recipeService.getActiveFilters();

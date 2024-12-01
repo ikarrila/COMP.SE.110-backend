@@ -2,7 +2,6 @@ package com.RecipeFinder.backend.models;
 
 import java.util.List;
 
-//TODO: true false valuet onko sliderit käytössä?
 public class RecipeFilter {
     private String cuisine;
     private String diet;
