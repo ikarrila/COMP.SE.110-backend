@@ -5,8 +5,7 @@ import java.util.List;
 public class Recipe {
     private Long id;
     private String name;
-    private List<Ingredient> ingredients;
-    private NutritionalInfo nutritionalInfo;
+    private List<String> ingredients;
     private List<String> diets;
     private List<String> cuisines;
 
@@ -35,21 +34,14 @@ public class Recipe {
         this.name = name;
     }
 
-    public List<Ingredient> getIngredients() {
+    public List<String> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<Ingredient> ingredients) {
+    public void setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
     }
 
-    public NutritionalInfo getNutritionalInfo() {
-        return nutritionalInfo;
-    }
-
-    public void setNutritionalInfo(NutritionalInfo nutritionalInfo) {
-        this.nutritionalInfo = nutritionalInfo;
-    }
 
     public List<String> getDiets() {
         return diets;

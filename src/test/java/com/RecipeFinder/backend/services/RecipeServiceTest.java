@@ -1,6 +1,8 @@
 package com.RecipeFinder.backend.services;
 
 import com.RecipeFinder.backend.models.Recipe;
+import com.RecipeFinder.backend.models.RecipeFilter;
+import com.RecipeFinder.backend.models.User;
 import com.RecipeFinder.backend.repositories.SpoonacularAPIRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,9 @@ class RecipeServiceTest {
     @Mock
     private SpoonacularAPIRepository spoonacularAPIRepository;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private RecipeService recipeService;
 
@@ -24,18 +29,6 @@ class RecipeServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    /**@Test
-    void testApplyIngredientFilter() {
-        List<String> ingredients = List.of("tomato", "cheese");
-        Recipe mockRecipe = new Recipe(); // Create a mock Recipe object
-        List<Recipe> mockRecipes = List.of(mockRecipe);
-
-        when(spoonacularAPIRepository.applyIngredientFilter(ingredients)).thenReturn(mockRecipes);
-
-        List<Recipe> recipes = recipeService.applyIngredientFilter(ingredients);
-        assertEquals(1, recipes.size());
-        verify(spoonacularAPIRepository, times(1)).applyIngredientFilter(ingredients);
-    }**/
 
     @Test
     void testGetRecipeInformation() {
