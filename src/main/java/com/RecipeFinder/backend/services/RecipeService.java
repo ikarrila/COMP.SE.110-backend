@@ -23,39 +23,28 @@ public class RecipeService {
     @Autowired
     private UserService userService;
 
+    //Variables for session filter management
     private final ConcurrentHashMap<Integer, RecipeFilter> activeFilters = new ConcurrentHashMap<Integer, RecipeFilter>();
-
     private final AtomicInteger sessionIdCounter = new AtomicInteger(0);
     private int latestSessionId = -1;
 
-
-    public RecipeFilter createRecipeFilter() {
-        return SpoonacularAPIRepository.createTestRecipeFilter();
-    }
-
-    public String urlBuilder(List<String> ingredients) {
-        return SpoonacularAPIRepository.urlBuilder(ingredients);
-    }
-
-
     /**
-     * Filters recipes based on specified ingredients.
-     *
-     * @param ingredients List of ingredients to filter recipes by.
-     * @return List of Recipe objects that include the specified ingredients.
-     *
+     * Filters recipes based on ingredients, user preferences and mealplan settings.
+     * @param ingredients List of ingredients to filter recipes by
+     * @return List of Recipe objects that include the specified ingredients
+     * 
      * This method delegates the filtering task to SpoonacularAPIRepository,
      * which communicates with an external API to retrieve recipes based on
-     * the provided ingredients. This service design centralizes business
-     * logic for filtering recipes and abstracts lower-level API interactions.
+     * the provided ingredients, user preferences and mealplan settings. 
+     * This service design centralizes business logic for filtering recipes and abstracts 
+     * lower-level API interactions.
      */
-    
      public List<Recipe> getMealplanRecipes(List<String> ingredients) {
         User defaultUser = userService.getUserById(1)
                                       .orElseThrow(() -> new RuntimeException("User not found!"));
         
-        //Give a test parameter recipeFilter for the repository 
-        RecipeFilter testRecipeFilter = createRecipeFilter();
+        //Test RecipeFilter model for testing and demo purposes
+        RecipeFilter testRecipeFilter = SpoonacularAPIRepository.createTestRecipeFilter();
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         String userFilteredUrl = SpoonacularAPIRepository.applyUserFilters(url, defaultUser);
         String mealplanFilteredUrl = SpoonacularAPIRepository.applyMealplanFilters(userFilteredUrl, testRecipeFilter);
@@ -67,7 +56,16 @@ public class RecipeService {
         return SpoonacularAPIRepository.returnRecipes(mealplanFilteredUrl);
     }
 
-
+    /**
+     * Filters recipes based on ingredients and user preferences.
+     * @param ingredients List of ingredients to filter recipes by
+     * @return List of Recipe objects that include the specified ingredients
+     * 
+     * This method delegates the filtering task to SpoonacularAPIRepository,
+     * which communicates with an external API to retrieve recipes based on
+     * the provided ingredients and user preferences. This service design centralizes business
+     * logic for filtering recipes and abstracts lower-level API interactions.
+     */
     public List<Recipe> getUserRecipes(List<String> ingredients) {
         User defaultUser = userService.getUserById(1)
                                       .orElseThrow(() -> new RuntimeException("User not found!"));
@@ -80,6 +78,16 @@ public class RecipeService {
         return SpoonacularAPIRepository.returnRecipes(userFilteredUrl);
     }
 
+    /**
+     * Filters recipes based on ingredients.
+     * @param ingredients List of ingredients to filter recipes by
+     * @return List of Recipe objects that include the specified ingredients
+     * 
+     * This method delegates the filtering task to SpoonacularAPIRepository,
+     * which communicates with an external API to retrieve recipes based on
+     * the provided ingredients. This service design centralizes business
+     * logic for filtering recipes and abstracts lower-level API interactions.
+     */
     public List<Recipe> getIngredientRecipes(List<String> ingredients) {
         String url = SpoonacularAPIRepository.urlBuilder(ingredients);
         RecipeFilter emptyFilter = new RecipeFilter();
@@ -90,24 +98,31 @@ public class RecipeService {
         return SpoonacularAPIRepository.returnRecipes(url);
     }
 
+    /**
+     * Updates the ConcurrentHashMap of the session with new active filters
+     * when a new api call is made
+     * @param recipeFilter RecipeFilter containing the currently active filters
+     */
     public void updateActiveFilters(RecipeFilter recipeFilter) {
         int newSessionId = sessionIdCounter.incrementAndGet();
         activeFilters.put(newSessionId, recipeFilter);
         latestSessionId = newSessionId;
     }
 
+    /**
+     * Returns the currently active filters from the ConcurrentHashMap as a JsonNode
+     * @return JsonNode containing all the information about currently active filters
+     */
     public JsonNode getActiveFilters() {
         RecipeFilter filter = activeFilters.getOrDefault(latestSessionId, new RecipeFilter());
         ObjectMapper mapper = new ObjectMapper();
         try {
-            // Convert the RecipeFilter object to a JsonNode
             return mapper.valueToTree(filter);
         } catch (Exception e) {
             e.printStackTrace();
-            return mapper.createObjectNode(); // Return an empty JSON object in case of an error
+            return mapper.createObjectNode(); 
         }
     }
-
 
     /**
      * Retrieves detailed information for a recipe by its unique ID.

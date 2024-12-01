@@ -32,7 +32,7 @@ public class RecipeController {
     }
     
     //Search recipes based on the ingrdient, the user (user id 1) and the mealplan filter
-    //Mealplan filter is hardcoded in the repository
+    //Mealplan filter is hardcoded in the repository for testing purposes
     @GetMapping("/search/user/mealplan")
     public List<Recipe> getMealplanRecipes(
         @RequestParam(value = "ingredients", required = false) List<String> ingredients
@@ -40,15 +40,15 @@ public class RecipeController {
         return recipeService.getMealplanRecipes(ingredients);
     }
     
+    //Get all the information abot the recipe with id
     @GetMapping("/{id}")
     public String getRecipeInformation(@PathVariable("id") Integer id) {
         return recipeService.getRecipeInformation(id);
     }
 
+    //Get all the active filters affecting the recipe search without sending API call
     @GetMapping("/active-filters")
-    public JsonNode getActiveFilters() {
-        //TODO: recipeFitler mode to jsonode
-        
+    public JsonNode getActiveFilters() {     
         return recipeService.getActiveFilters();
     }
 }

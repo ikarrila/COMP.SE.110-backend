@@ -6,38 +6,26 @@ import org.springframework.web.client.RestTemplate;
 import com.RecipeFinder.backend.models.Recipe;
 import com.RecipeFinder.backend.models.User;
 import com.RecipeFinder.backend.models.RecipeFilter;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import java.net.URL;
-import java.net.URLDecoder;
 
 @Repository
 public class SpoonacularAPIRepository {
 
     private final String apiUrl = "https://api.spoonacular.com/recipes/complexSearch";
     private final String apiKey = "4b2cdc4ff73546b89cc40882c81c8e9c";
+
     /**
-     * Searches for recipes that include specified ingredients.
-     *
-     * @param ingredients List of ingredients to include in search results.
-     * @return List of Recipe objects matching the criteria.
-     *
-     * Constructs an API request with specified ingredients to retrieve recipes.
-     * The method leverages Builder Pattern concepts, dynamically constructing
-     * URL parameters based on input. The Facade pattern is evident in its
-     * interface, allowing the service layer to fetch recipes without
-     * concern for the underlying API specifics.
-     */ 
-    
+     * Builds the base url for the API calls.
+     * @param ingredients List of ingredients that the recipe search will be based on
+     * @return The base url that is used for the API call
+     */
      public String urlBuilder(List<String> ingredients) {
         String includeIngredients = ingredients.stream().collect(Collectors.joining(","));
         String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngredients;
@@ -46,21 +34,13 @@ public class SpoonacularAPIRepository {
      } 
     
      
-
+    /**
+     * Returns the list of recipes based on the filters
+     * @param url The url for the API call
+     * @return List of Recipe models
+     */
     public List<Recipe> returnRecipes(String url) {
     RestTemplate restTemplate = new RestTemplate();
-
-    //Creating comma separated string
-    //String includeIngrdients = ingredients.stream().collect(Collectors.joining(","));
-    //String url = apiUrl + "?apiKey=" + apiKey + "&number=10" + "&includeIngredients=" + includeIngrdients;
-    
-    //System.out.println(url);
-
-    //String userFilteredUrl = applyUserFilters(url, user);
-    //String mealplanFilteredUrl = applyMealplanFilters(userFilteredUrl, recipeFilter);
-    
-    //System.out.println(userFilteredUrl);
-    //System.out.println(mealplanFilteredUrl);
 
     try {
         String response = restTemplate.getForObject(url, String.class);
@@ -114,6 +94,7 @@ public class SpoonacularAPIRepository {
     }
     return null;
     }
+
    /**
      * Extracts the item name from a given string after the first space.
      *
@@ -132,7 +113,13 @@ public class SpoonacularAPIRepository {
     return "";
     }
 
-    //Applies the parameters in the API based on the user filters
+    /**
+     * Applies filters to the API call for recipe search based on the settings
+     * in the user profile
+     * @param url Input string containing the base API call
+     * @param user Selected user model where settings are fetched
+     * @return The updated API call with user filters
+     */
     public String applyUserFilters(String url, User user) {
         if (user.getDiet() != null && !user.getDiet().isEmpty()) {
             url += "&diet=" + user.getDiet();
@@ -150,7 +137,12 @@ public class SpoonacularAPIRepository {
         return url;
     }
 
-    //Applies the parameters in the API based on the frontend selections
+    /**
+     * Applies the mealplan filters from the RecipeFilter model
+     * @param url The base url for the API call containing user and ingeredient filters
+     * @param recipeFilter The filters set by the user in the frontend
+     * @return The updated url for the API call with all the filters in place
+     */
     public String applyMealplanFilters(String url, RecipeFilter recipeFilter) {
         if (recipeFilter.getCuisine() != null && !recipeFilter.getCuisine().isEmpty()) {
             if (url.contains("&cuisine=")) {
@@ -185,7 +177,10 @@ public class SpoonacularAPIRepository {
         return url;
     }
  
-    //Placeholder recipe filter in order to search recipes based on the mealplan filters
+    /**
+     * Hardcoded RecipeFilter model for backend testing and demo purposes
+     * @return RecipeFilter model used for additional filtering criteria
+     */
     public RecipeFilter createTestRecipeFilter() {
         RecipeFilter recipeFilter = new RecipeFilter();
         recipeFilter.setCuisine("italian");
@@ -200,6 +195,14 @@ public class SpoonacularAPIRepository {
        
     }
 
+    /**
+     * Combines the filters coming from the price data API, user model and mealplan filter
+     * for active-filters endpoint without sending API call
+     * @param recipeFilter Mealplan filters set by the user in the frontend
+     * @param user The user filters coming from the user profile
+     * @param ingredients Ingredients selected from the price data API
+     * @return RecipeFilter model containing all the filters
+     */
     public RecipeFilter combineFilters(RecipeFilter recipeFilter, User user, List<String> ingredients) {
         RecipeFilter combinedFilter = new RecipeFilter();
 
@@ -254,7 +257,6 @@ public class SpoonacularAPIRepository {
         combinedFilter.setIncludeIngredients(
             combinedIncludedIngredients.stream().distinct().collect(Collectors.toList())
         );  
-
 
         return combinedFilter;
     
