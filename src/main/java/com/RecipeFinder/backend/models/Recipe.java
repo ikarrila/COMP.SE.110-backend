@@ -6,7 +6,6 @@ public class Recipe {
     private Long id;
     private String name;
     private List<Ingredient> ingredients;
-    private NutritionalInfo nutritionalInfo;
     private List<String> diets;
     private List<String> cuisines;
 
@@ -43,13 +42,6 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
-    public NutritionalInfo getNutritionalInfo() {
-        return nutritionalInfo;
-    }
-
-    public void setNutritionalInfo(NutritionalInfo nutritionalInfo) {
-        this.nutritionalInfo = nutritionalInfo;
-    }
 
     public List<String> getDiets() {
         return diets;
