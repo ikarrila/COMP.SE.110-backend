@@ -5,7 +5,8 @@ Software Design group project
 ## Prerequisites
 
 - Java 23
-- Docker (v?)
+- Docker
+- Frontend dependencies (clone front repo and npm install to verify)
 
 ## Getting started
 
